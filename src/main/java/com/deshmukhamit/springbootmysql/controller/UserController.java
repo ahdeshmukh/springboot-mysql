@@ -30,17 +30,11 @@ public class UserController {
     }
 
     // Get user by email
-    /*@GetMapping("/users/email/{email}")
+    @GetMapping("/users/email/{email}")
     public User getUserByEmail(@PathVariable(value = "email") String email) {
-        return userRepository.findByEmail(email);
-        // .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
     }
-
-    // Get users by lastName
-    @GetMapping("/users/lastname/{lastname}")
-    public List<User> getUserByLastName(@PathVariable(value = "lastname") String lastname) {
-        return userRepository.findByLastName(lastname);
-    }*/
 
     // Create a new User
     @PostMapping("/users")
