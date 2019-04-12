@@ -2,7 +2,7 @@ package com.deshmukhamit.springbootmysql.controller;
 
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
-import com.deshmukhamit.springbootmysql.repository.UserRepository;
+import com.deshmukhamit.springbootmysql.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,16 +13,58 @@ import java.util.List;
 @RequestMapping("/api")
 public class UserController {
 
+    //@Autowired
+    //private UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     // Get all users
     @GetMapping("/users")
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     // Get user by id
+    @GetMapping("/users/{id}")
+    public User getUserById(@PathVariable(value = "id") Long userId) {
+        return userService.getUserById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+    }
+
+    // Get user by email
+    @GetMapping("/users/email/{email}")
+    public User getUserByEmail(@PathVariable(value = "email") String email) {
+        return userService.getUserByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+    }
+
+    // Create a new User
+    @PostMapping("/users")
+    public User createUser(@Valid @RequestBody User user) {
+        return userService.addUser(user);
+    }
+
+    // Update a user
+    @PutMapping("/users/{id}")
+    public User updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User userData) {
+
+        User updatedUser = userService.updateUser(id, userData);
+        if(updatedUser == null) {
+            throw new ResourceNotFoundException("User", "id", id);
+        }
+
+        return updatedUser;
+
+    }
+
+
+}
+
+
+/*
+*
+* // Get user by id
     @GetMapping("/users/{id}")
     public User getUserById(@PathVariable(value = "id") Long userId) {
         return userRepository.findById(userId)
@@ -67,4 +109,5 @@ public class UserController {
 
         return user;
     }
-}
+*
+* */
