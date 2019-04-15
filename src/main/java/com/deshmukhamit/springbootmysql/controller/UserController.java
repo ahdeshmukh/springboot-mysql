@@ -48,16 +48,14 @@ public class UserController {
     // Update a user
     @PutMapping("/users/{id}")
     public User updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User userData) {
-
-        User updatedUser = userService.updateUser(id, userData);
-        if(updatedUser == null) {
-            throw new ResourceNotFoundException("User", "id", id);
-        }
-
-        return updatedUser;
-
+        return userService.updateUser(id, userData);
     }
 
+    // Delete a user
+    @DeleteMapping("/users/{id}")
+    public User deleteUser(@PathVariable(value = "id") Long id) {
+        return userService.deleteUser(id);
+    }
 
 }
 

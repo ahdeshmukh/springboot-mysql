@@ -32,9 +32,8 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
-        if(!userRepository.findById(id).isPresent()) {
-            return null;
-        }
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         User updateUser = new User();
         updateUser.setId(id);
@@ -43,5 +42,13 @@ public class UserService {
         updateUser.setEmail(user.getEmail());
 
         return userRepository.save(updateUser);
+    }
+
+    public User deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+        userRepository.deleteById(id);
+        return user;
     }
 }
