@@ -1,0 +1,16 @@
+## create mysql.application.properties in the same directory next to this file
+## copy the contents of this file into mysql.application.properties
+## replace the placeholders like HOSTNAME, PORT, DBNAME, DBUSER and DBPASSWORD with actual values
+
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url = jdbc:mysql://HOSTNAME:PORT/DBNAME?useSSL=false
+spring.datasource.username = DBUSER
+spring.datasource.password = DBPASSWORD
+
+
+## Hibernate Properties
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto = update

@@ -6,7 +6,7 @@ HELP.md
 #!.mvn/wrapper/maven-wrapper.jar
 
 ### Application sensitive data ###
-src/main/resources/application.properties
+src/main/resources/mysql.application.properties
 
 ### STS ###
 .apt_generated
