@@ -19,21 +19,22 @@ import java.util.Date;
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"})
 
 public class User implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 40)
-    @NotEmpty(message = "first name must not be empty")
+    @NotEmpty(message = "First Name is required")
     private String firstName;
 
     @Column(nullable = false, length = 40)
-    @NotEmpty(message = "last name must not be empty")
+    @NotEmpty(message = "Last Name is required")
     private String lastName;
 
     @Column(nullable = false, length = 50, unique = true)
-    @NotEmpty(message = "email must not be empty")
-    @Email(message = "email should be a valid email")
+    @NotEmpty(message = "Email is required")
+    @Email(message = "Email must be in a valid format")
     private String email;
 
     @Column(nullable = false, updatable = false)
