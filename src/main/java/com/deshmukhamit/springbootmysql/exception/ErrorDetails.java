@@ -1,20 +1,27 @@
 package com.deshmukhamit.springbootmysql.exception;
 
+import java.util.List;
+
 public class ErrorDetails {
     private String message;
-    private String details;
+    private List<String> details;
 
-    ErrorDetails(String message, String details) {
+    ErrorDetails(String message, List<String> details) {
         super();
         this.message = message;
         this.details = details;
+    }
+
+    ErrorDetails(String message) {
+        super();
+        this.message = message;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public String getDetails() {
+    public List<String> getDetails() {
         return details;
     }
 

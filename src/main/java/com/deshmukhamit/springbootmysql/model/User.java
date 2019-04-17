@@ -6,7 +6,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -21,19 +23,17 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @NotNull
-    @Column(length = 40)
+    @Column(nullable = false, length = 40)
+    @NotEmpty(message = "first name must not be empty")
     private String firstName;
 
-    @NotBlank
-    @NotNull
-    @Column(length = 40)
+    @Column(nullable = false, length = 40)
+    @NotEmpty(message = "last name must not be empty")
     private String lastName;
 
-    @NotBlank
-    @NotNull
-    @Column(length = 50, unique = true)
+    @Column(nullable = false, length = 50, unique = true)
+    @NotEmpty(message = "email must not be empty")
+    @Email(message = "email should be a valid email")
     private String email;
 
     @Column(nullable = false, updatable = false)
