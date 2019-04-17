@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ErrorDetails {
     private String message;
-    private List<String> details;
+    List<String> details; // making package private based on compilation warning
 
     ErrorDetails(String message, List<String> details) {
         super();
