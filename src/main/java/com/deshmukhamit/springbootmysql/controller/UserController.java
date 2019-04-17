@@ -1,31 +1,20 @@
 package com.deshmukhamit.springbootmysql.controller;
 
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
-import com.deshmukhamit.springbootmysql.interceptor.AuthHeaderInterceptor;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class UserController implements WebMvcConfigurer {
+public class UserController extends BaseAuthController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private AuthHeaderInterceptor authHeaderInterceptor;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authHeaderInterceptor);
-    }
 
     // Get all users
     @GetMapping("/users")
