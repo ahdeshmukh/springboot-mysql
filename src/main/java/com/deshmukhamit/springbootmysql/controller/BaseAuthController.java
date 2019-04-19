@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-public class BaseAuthController implements WebMvcConfigurer {
+
+public class BaseAuthController extends BaseController implements WebMvcConfigurer {
     @Autowired
     private AuthHeaderInterceptor authHeaderInterceptor;
 
