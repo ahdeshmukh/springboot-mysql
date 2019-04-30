@@ -1,5 +1,6 @@
 package com.deshmukhamit.springbootmysql.service;
 
+import com.deshmukhamit.springbootmysql.exception.DuplicateResourceException;
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
@@ -29,12 +30,21 @@ public class UserService {
     }
 
     public User addUser(User user) {
+        // user with email already exists
+        if(getUserByEmail(user.getEmail()).isPresent()) {
+            throw new DuplicateResourceException("User", "email", user.getEmail());
+        }
+
         return userRepository.save(user);
     }
 
     public User updateUser(Long id, User user) {
         userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+        if(getUserByEmail(user.getEmail()).isPresent()) {
+            throw new DuplicateResourceException("User", "email", user.getEmail());
+        }
 
         User updateUser = new User();
         updateUser.setId(id);

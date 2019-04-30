@@ -1,6 +1,5 @@
 package com.deshmukhamit.springbootmysql.exception;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.http.HttpHeaders;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import javax.persistence.PersistenceException;
 
 @ControllerAdvice
 @RestController
@@ -33,12 +30,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return new ResponseEntity<>(this.getErrorDetails(ex.getLocalizedMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public final ResponseEntity<ErrorDetails> handleDuplicateResourceException(DuplicateResourceException ex, WebRequest request) {
+        return new ResponseEntity<>(this.getErrorDetails(ex.getLocalizedMessage()), HttpStatus.PRECONDITION_FAILED);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public final ResponseEntity<ErrorDetails> handleAuthHeaderException(AccessDeniedException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
-        //for(ObjectError error : ex.getBindingResult().getAllErrors()) {
-            details.add(ex.getLocalizedMessage());
-        //}
+        details.add(ex.getLocalizedMessage());
         return new ResponseEntity<>(this.getErrorDetails("Access Denied", details), HttpStatus.FORBIDDEN);
     }
 
