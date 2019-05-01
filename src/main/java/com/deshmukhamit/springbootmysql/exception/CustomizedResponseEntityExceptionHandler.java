@@ -26,20 +26,21 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }*/
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(this.getErrorDetails(ex.getLocalizedMessage()), HttpStatus.NOT_FOUND);
+    public final ResponseEntity<CustomErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public final ResponseEntity<ErrorDetails> handleDuplicateResourceException(DuplicateResourceException ex, WebRequest request) {
-        return new ResponseEntity<>(this.getErrorDetails(ex.getLocalizedMessage()), HttpStatus.PRECONDITION_FAILED);
+    public final ResponseEntity<CustomErrorResponse> handleDuplicateResourceException(DuplicateResourceException ex, WebRequest request) {
+        HttpStatus httpStatus = HttpStatus.PRECONDITION_FAILED;
+        return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public final ResponseEntity<ErrorDetails> handleAuthHeaderException(AccessDeniedException ex, WebRequest request) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
-        return new ResponseEntity<>(this.getErrorDetails("Access Denied", details), HttpStatus.FORBIDDEN);
+    public final ResponseEntity<CustomErrorResponse> handleAuthHeaderException(AccessDeniedException ex, WebRequest request) {
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+        return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
     }
 
     @Override
@@ -48,15 +49,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         for(ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
-        return new ResponseEntity(this.getErrorDetails("Validation Failed", details), HttpStatus.BAD_REQUEST);
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, "Validation Failed", details), httpStatus);
     }
 
-    private ErrorDetails getErrorDetails(String message, List<String> details) {
-        return new ErrorDetails(message, details);
+    private CustomErrorResponse getCustomErrorResponse(HttpStatus httpStatus, String message) {
+        return new CustomErrorResponse(httpStatus.getReasonPhrase(), httpStatus.value(), message);
     }
-
-    private ErrorDetails getErrorDetails(String message) {
-        return new ErrorDetails(message);
+    private CustomErrorResponse getCustomErrorResponse(HttpStatus httpStatus, String message, List<String> details) {
+        return new CustomErrorResponse(httpStatus.getReasonPhrase(), httpStatus.value(), message, details);
     }
 
 }
