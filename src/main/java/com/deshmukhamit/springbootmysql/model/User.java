@@ -1,22 +1,20 @@
 package com.deshmukhamit.springbootmysql.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "user")
-@EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updatedAt"})
+@EntityListeners(AuditingEntityListener.class) // not sure if this is needed or what it does
+//@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}) -> using @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) instead
 
 public class User implements Serializable {
 
@@ -32,7 +30,7 @@ public class User implements Serializable {
     @NotEmpty(message = "Last Name is required")
     private String lastName;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 60, unique = true)
     @NotEmpty(message = "Email is required")
     @Email(message = "Email must be in a valid format")
     private String email;
@@ -40,11 +38,13 @@ public class User implements Serializable {
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date createdAt = new Date();
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date updatedAt = new Date();
 
     public Long getId() {
