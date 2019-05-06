@@ -39,6 +39,8 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
+        // TODO: Only self and admin can update a current user. Check the role and throw error on violation
+
         userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
