@@ -39,10 +39,15 @@ public class UserService {
     public User updateUser(Long id, User user) {
         // TODO: Only self and admin can update a current user. Check the role and throw error on violation
 
-        User currentUser = userRepository.findById(id)
+        // user with ID does not exist, nothing to update
+        User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
-        if(getUserByEmail(user.getEmail()).isPresent()) {
+
+        /* try to get a user with the email that we are trying to update. If such a user exists who is different than the
+        existing user, it means we are trying to set an email that is already in use for some other user, so throw exception */
+        Optional<User> existingUserByEmail = getUserByEmail(user.getEmail());
+        if(existingUserByEmail.isPresent() && !(existingUser.getId().equals(existingUserByEmail.get().getId()))) {
             throw new DuplicateResourceException("User", "email", user.getEmail());
         }
 
@@ -52,7 +57,7 @@ public class UserService {
         updateUser.setLastName(user.getLastName());
         updateUser.setEmail(user.getEmail());
 
-        String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? currentUser.getPassword() : user.getPassword();
+        String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUser.getPassword() : user.getPassword();
         updateUser.setPassword(password);
 
         return userRepository.save(updateUser);
