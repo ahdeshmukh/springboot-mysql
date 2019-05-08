@@ -41,7 +41,7 @@ public class UserService {
     public User updateUser(Long id, User user) {
         // TODO: Only self and admin can update a current user. Check the role and throw error on violation
 
-        userRepository.findById(id)
+        User currentUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         if(getUserByEmail(user.getEmail()).isPresent()) {
@@ -54,6 +54,9 @@ public class UserService {
         updateUser.setLastName(user.getLastName());
         updateUser.setEmail(user.getEmail());
 
+        String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? currentUser.getPassword() : user.getPassword();
+        updateUser.setPassword(password);
+
         return userRepository.save(updateUser);
     }
 
@@ -64,4 +67,5 @@ public class UserService {
         userRepository.deleteById(id);
         return user;
     }
+
 }

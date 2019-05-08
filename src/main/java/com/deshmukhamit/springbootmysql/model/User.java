@@ -35,6 +35,10 @@ public class User implements Serializable {
     @Email(message = "Email must be in a valid format")
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //@NotEmpty(message = "Password is required")
+    private String password;
+
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
@@ -77,6 +81,14 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }
