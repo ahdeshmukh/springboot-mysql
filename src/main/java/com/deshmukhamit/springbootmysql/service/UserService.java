@@ -5,7 +5,6 @@ import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,9 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -35,6 +37,9 @@ public class UserService {
             throw new DuplicateResourceException("User", "email", user.getEmail());
         }
 
+        // encode the password before storing it in the database
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -47,7 +52,7 @@ public class UserService {
 
 
         /* try to get a user with the email that we are trying to update. If such a user exists who is different than the
-        existing user, it means we are trying to set an email that is already in use for some other user, so throw exception */
+        current user, it means we are trying to set an email that is already in use for some other user, so throw exception */
         Optional<User> existingUserByEmail = getUserByEmail(user.getEmail());
         if(existingUserByEmail.isPresent() && !(existingUser.getId().equals(existingUserByEmail.get().getId()))) {
             throw new DuplicateResourceException("User", "email", user.getEmail());
@@ -58,8 +63,6 @@ public class UserService {
         updateUser.setFirstName(user.getFirstName());
         updateUser.setLastName(user.getLastName());
         updateUser.setEmail(user.getEmail());
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUser.getPassword() : passwordEncoder.encode(user.getPassword());
         updateUser.setPassword(password);
