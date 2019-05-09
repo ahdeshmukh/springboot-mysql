@@ -43,6 +43,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
     }
 
+    @ExceptionHandler(LoginFailedException.class)
+    public final ResponseEntity<CustomErrorResponse> handleLoginFailedException(LoginFailedException ex) {
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<String> details = new ArrayList<>();

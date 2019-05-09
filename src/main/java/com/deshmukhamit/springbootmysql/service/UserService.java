@@ -5,6 +5,8 @@ import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,7 +59,9 @@ public class UserService {
         updateUser.setLastName(user.getLastName());
         updateUser.setEmail(user.getEmail());
 
-        String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUser.getPassword() : user.getPassword();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUser.getPassword() : passwordEncoder.encode(user.getPassword());
         updateUser.setPassword(password);
 
         return userRepository.save(updateUser);

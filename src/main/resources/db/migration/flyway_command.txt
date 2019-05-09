@@ -1,0 +1,1 @@
+mvn flyway:migrate -Dflyway.url=jdbc:mysql://DB_HOST:DB_PORT/DB_NAME?useSSL=false -Dflyway.user=DB_USER -Dflyway.password=DB_PASSWORD

@@ -17,7 +17,7 @@ public class AuthHeaderInterceptor extends HandlerInterceptorAdapter {
         throws Exception {
 
         // array to hold all public routes
-        String[] publicRoutes = new String[]{"public"};
+        String[] publicRoutes = new String[]{"public", "login"};
 
         String path = request.getServletPath(); // get current route path
 

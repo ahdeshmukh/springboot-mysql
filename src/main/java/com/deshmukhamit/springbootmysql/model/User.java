@@ -91,9 +91,8 @@ public class User implements Serializable {
     }
 
     public void setPassword(String password) {
-        // make sure the password is encrypted
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        this.password = passwordEncoder.encode(password);
+        // Todo: move password encryption here eventually
+        this.password = password;
     }
 
 }
