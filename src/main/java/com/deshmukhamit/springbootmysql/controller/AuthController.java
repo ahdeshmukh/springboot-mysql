@@ -2,7 +2,6 @@ package com.deshmukhamit.springbootmysql.controller;
 
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.service.AuthService;
-//import com.deshmukhamit.springbootmysql.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +17,9 @@ public class AuthController extends BaseController {
 
     @PostMapping("/login")
     public User login(@RequestBody Map<String, String> json) {
-        String email = (json.containsKey("email")) ? json.get("email") : "";
-        String password = (json.containsKey("password")) ? json.get("password") : "";
+        String email = json.getOrDefault("email", "");
+        String password = json.getOrDefault("password", "");
+
         return authService.login(email, password);
     }
 }
