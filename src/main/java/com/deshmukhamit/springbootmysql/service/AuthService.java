@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class AuthService {
     @Autowired
@@ -25,7 +27,9 @@ public class AuthService {
 
         try {
             user = userService.getUserByEmail(email).get();
-        } catch (Exception ex) { // need to catch actual exception
+        } catch (NoSuchElementException ex) {
+            throw new LoginFailedException();
+        } catch (Exception ex) { // safety net
             throw new LoginFailedException();
         }
 
