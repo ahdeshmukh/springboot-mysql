@@ -1,12 +1,11 @@
 package com.deshmukhamit.springbootmysql.service;
 
 import com.deshmukhamit.springbootmysql.exception.LoginFailedException;
+import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
 
 @Service
 public class AuthService {
@@ -16,7 +15,7 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User login(String email, String password) {
+    public User login(String email, String password) throws LoginFailedException {
         Boolean success = false;
         User user;
 
@@ -26,8 +25,8 @@ public class AuthService {
         }
 
         try {
-            user = userService.getUserByEmail(email).get();
-        } catch (NoSuchElementException ex) {
+            user = userService.getUserByEmail(email);
+        } catch (ResourceNotFoundException ex) {
             throw new LoginFailedException();
         } catch (Exception ex) { // safety net
             throw new LoginFailedException();

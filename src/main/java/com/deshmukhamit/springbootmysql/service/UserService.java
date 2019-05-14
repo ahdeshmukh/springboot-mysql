@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -23,58 +22,90 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User getUserByEmail(String email) throws ResourceNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
     }
 
     public User addUser(User user) {
-        // user with email already exists
-        if(getUserByEmail(user.getEmail()).isPresent()) {
-            throw new DuplicateResourceException("User", "email", user.getEmail());
+        User newUser = null;
+
+        try {
+            User existingUser = getUserByEmail(user.getEmail());
+            if(existingUser.getId() > 0) {
+                throw new DuplicateResourceException("User", "email", user.getEmail());
+            }
+        } catch (ResourceNotFoundException ex) {
+            // this is good, since a user with the email does not exist, so we can create a record with the given email
+            // encode the password before storing it in the database
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            newUser = userRepository.save(user);
         }
 
-        // encode the password before storing it in the database
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return userRepository.save(user);
+        return newUser;
     }
 
-    public User updateUser(Long id, User user) {
+    public User updateUser(Long id, User user) throws ResourceNotFoundException, DuplicateResourceException {
         // TODO: Only self and admin can update a current user. Check the role and throw error on violation
 
-        // user with ID does not exist, nothing to update
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-
-
-        /* try to get a user with the email that we are trying to update. If such a user exists who is different than the
-        current user, it means we are trying to set an email that is already in use for some other user, so throw exception */
-        Optional<User> existingUserByEmail = getUserByEmail(user.getEmail());
-        if(existingUserByEmail.isPresent() && !(existingUser.getId().equals(existingUserByEmail.get().getId()))) {
-            throw new DuplicateResourceException("User", "email", user.getEmail());
+       User existingUserById, updateUser = null;
+        try {
+            existingUserById = getUserById(id);
+         } catch(ResourceNotFoundException ex) {
+            // user with id does not exist, throw ResourceNotFoundException
+            throw ex;
         }
 
-        User updateUser = new User();
-        updateUser.setId(id);
-        updateUser.setFirstName(user.getFirstName());
-        updateUser.setLastName(user.getLastName());
-        updateUser.setEmail(user.getEmail());
+        Boolean continueUpdate = false;
 
-        String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUser.getPassword() : passwordEncoder.encode(user.getPassword());
-        updateUser.setPassword(password);
+        try {
 
-        return userRepository.save(updateUser);
+            // if a user with existing email is found, make sure that it is == existingUserById,
+            // otherwise the provided email belongs to some other user and updating the email to given value should not be allowed
+            // or else we will get ConstraintViolation Exception
+
+            User existingUserByEmail = getUserByEmail(user.getEmail());
+            if(!(existingUserByEmail.getId().equals(existingUserById.getId()))) {
+                throw new DuplicateResourceException("User", "email", user.getEmail());
+            }
+
+            continueUpdate = true;
+
+        } catch(ResourceNotFoundException ex) {
+            // good -> this email is not taken, so continue
+            continueUpdate = true;
+        }
+
+        if(continueUpdate) {
+            updateUser = new User();
+            updateUser.setId(id);
+            updateUser.setFirstName(user.getFirstName());
+            updateUser.setLastName(user.getLastName());
+            updateUser.setEmail(user.getEmail());
+
+            String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUserById.getPassword() : passwordEncoder.encode(user.getPassword());
+            updateUser.setPassword(password);
+
+            return userRepository.save(updateUser);
+        }
+
+        return null; //should never get here, exceptions should be thrown before this
     }
 
-    public User deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+    public User deleteUser(Long id) throws ResourceNotFoundException {
+        User user = null;
+        try {
+            user = getUserById(id);
+            userRepository.deleteById(id);
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        }
 
-        userRepository.deleteById(id);
         return user;
     }
 

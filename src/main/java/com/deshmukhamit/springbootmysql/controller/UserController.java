@@ -25,15 +25,13 @@ public class UserController extends BaseAuthController {
     // Get user by id
     @GetMapping("/users/{id}")
     public User getUserById(@PathVariable(value = "id") Long userId) {
-        return userService.getUserById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        return userService.getUserById(userId);
     }
 
     // Get user by email
     @GetMapping("/users/email/{email}")
     public User getUserByEmail(@PathVariable(value = "email") String email) {
-        return userService.getUserByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+        return userService.getUserByEmail(email);
     }
 
     // Create a new User
@@ -55,54 +53,3 @@ public class UserController extends BaseAuthController {
     }
 
 }
-
-
-/*
-*
-* // Get user by id
-    @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable(value = "id") Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-    }
-
-    // Get user by email
-    @GetMapping("/users/email/{email}")
-    public User getUserByEmail(@PathVariable(value = "email") String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
-    }
-
-    // Create a new User
-    @PostMapping("/users")
-    public User createUser(@Valid @RequestBody User user) {
-        return userRepository.save(user);
-    }
-
-    // Update a User
-    @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable(value = "id") Long userId, @Valid @RequestBody User userData) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-
-        user.setFirstName(userData.getFirstName());
-        user.setLastName(userData.getLastName());
-        user.setEmail(userData.getEmail());
-
-        User updatedUser = userRepository.save(user);
-        return updatedUser;
-
-    }
-
-    // Delete a user
-    @DeleteMapping("/users/{id}")
-    public User deleteUser(@PathVariable(value = "id") Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-        userRepository.deleteById(userId);
-
-        return user;
-    }
-*
-* */
