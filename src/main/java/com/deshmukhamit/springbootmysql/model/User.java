@@ -51,6 +51,11 @@ public class User implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date updatedAt = new Date();
 
+    @Column(nullable = false, columnDefinition = "BIT", length = 1)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Integer active = 1;
+
+
     public Long getId() {
         return id;
     }
@@ -90,6 +95,14 @@ public class User implements Serializable {
     public void setPassword(String password) {
         // Todo: move password encryption here eventually
         this.password = password;
+    }
+
+    public Integer getActive() {
+        return active;
+    }
+
+    public void setActive(Integer active) {
+        this.active = active;
     }
 
 }
