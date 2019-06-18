@@ -1,11 +1,11 @@
 package com.deshmukhamit.springbootmysql.service;
 
 import com.deshmukhamit.springbootmysql.exception.DuplicateResourceException;
+import com.deshmukhamit.springbootmysql.exception.PasswordException;
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private PasswordService passwordService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -43,8 +43,8 @@ public class UserService {
         } catch (ResourceNotFoundException ex) {
             // this is good, since a user with the email does not exist, so we can create a record with the given email
             // encode the password before storing it in the database
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            newUser = userRepository.save(user);
+            user.setPassword(passwordService.encodePassword(user.getPassword()));
+            newUser = this.saveUser(user);
         }
 
         return newUser;
@@ -56,7 +56,7 @@ public class UserService {
        User existingUserById, updateUser = null;
         try {
             existingUserById = getUserById(id);
-         } catch(ResourceNotFoundException ex) {
+        } catch(ResourceNotFoundException ex) {
             // user with id does not exist, throw ResourceNotFoundException
             throw ex;
         }
@@ -65,9 +65,9 @@ public class UserService {
 
         try {
 
-            // if a user with existing email is found, make sure that it is == existingUserById,
-            // otherwise the provided email belongs to some other user and updating the email to given value should not be allowed
-            // or else we will get ConstraintViolation Exception
+            // if a user with existing email is found, make sure that user's id == existingUserById,
+            // otherwise the provided email belongs to some other user and updating the email to the given value should not be allowed
+            //  not doing so will throw ConstraintViolation Exception
 
             User existingUserByEmail = getUserByEmail(user.getEmail());
             if(!(existingUserByEmail.getId().equals(existingUserById.getId()))) {
@@ -88,7 +88,7 @@ public class UserService {
             updateUser.setLastName(user.getLastName());
             updateUser.setEmail(user.getEmail());
 
-            String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUserById.getPassword() : passwordEncoder.encode(user.getPassword());
+            String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUserById.getPassword() : passwordService.encodePassword(user.getPassword());
             updateUser.setPassword(password);
 
             return userRepository.save(updateUser);
@@ -107,6 +107,30 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public User updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) throws PasswordException {
+        if(currentPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
+            throw new PasswordException("Values cannot be blank");
+        }
+        if(!newPassword.equals(confirmPassword)) {
+            //return null;
+            throw new PasswordException("New Password and Confirm Password must match");
+        }
+
+        // TODO: check if the currentPassword is correct, if not return
+        User user = this.getUserById(id);
+        if(!passwordService.verifyPassword(currentPassword, user.getPassword())) {
+            throw new PasswordException("Current password is not valid");
+        }
+        user.setPassword(passwordService.encodePassword(newPassword));
+
+        return this.saveUser(user);
+    }
+
+    public User saveUser(User user) {
+        // check if current user is admin or same as the user being updated
+        return userRepository.save(user);
     }
 
 }

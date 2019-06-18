@@ -13,7 +13,7 @@ public class AuthService {
     private UserService userService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private PasswordService passwordService;
 
     public User login(String email, String password) throws LoginFailedException {
         Boolean success = false;
@@ -26,14 +26,14 @@ public class AuthService {
 
         try {
             user = userService.getUserByEmail(email);
-        } catch (ResourceNotFoundException ex) {
+        } catch (ResourceNotFoundException ex) { // user with given email not found
             throw new LoginFailedException();
         } catch (Exception ex) { // safety net
             throw new LoginFailedException();
         }
 
         if(user.getId().longValue() > 0) {
-           success = passwordEncoder.matches(password, user.getPassword());
+           success = passwordService.verifyPassword(password, user.getPassword());
         }
 
         if(!success) {
@@ -42,4 +42,8 @@ public class AuthService {
 
         return user;
     }
+
+//    public boolean verifyPassword(String plainPassword, String encryptedPassword) {
+//        return passwordEncoder.matches(plainPassword, encryptedPassword);
+//    }
 }

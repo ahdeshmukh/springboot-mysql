@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 //@RequestMapping("/api")
@@ -44,6 +45,17 @@ public class UserController extends BaseAuthController {
     @PutMapping("/users/{id}")
     public User updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody User userData) {
         return userService.updateUser(id, userData);
+    }
+
+    // Update user password
+    @PutMapping("/users/{id}/update-password")
+    public User updateUserPassword(@PathVariable(value = "id") Long id,
+                                     @RequestBody Map<String, String> json) {
+        String currentPassword = json.getOrDefault("currentPassword", "");
+        String newPassword = json.getOrDefault("newPassword", "");
+        String confirmPassword = json.getOrDefault("confirmPassword", "");
+        return userService.updatePassword(id, currentPassword, newPassword, confirmPassword);
+
     }
 
     // Delete a user

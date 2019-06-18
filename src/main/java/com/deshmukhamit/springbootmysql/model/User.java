@@ -1,5 +1,6 @@
 package com.deshmukhamit.springbootmysql.model;
 
+import com.deshmukhamit.springbootmysql.annotation.PasswordRequired;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -37,6 +38,7 @@ public class User implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     //@NotEmpty(message = "Password is required")
+    //@PasswordRequired(message = "Custom password is required")
     private String password;
 
     @Column(nullable = false, updatable = false)

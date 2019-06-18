@@ -3,7 +3,7 @@
 ## replace the placeholders like DBHOST, DBPORT, DBNAME, DBUSER and DBPASSWORD with actual values
 
 ## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
-spring.datasource.url = jdbc:mysql://DBHOST:DBPORT/DBNAME?useSSL=false
+spring.datasource.url = jdbc:mysql://DBHOST:DBPORT/DBNAME?useSSL=false&allowPublicKeyRetrieval=true
 spring.datasource.username = DBUSER
 spring.datasource.password = DBPASSWORD
 
