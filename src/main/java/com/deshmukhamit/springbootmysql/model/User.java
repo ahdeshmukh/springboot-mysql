@@ -54,7 +54,7 @@ public class User implements Serializable {
     private Date updatedAt = new Date();
 
     @Column(nullable = false, columnDefinition = "BIT", length = 1)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Integer active = 1;
 
 
