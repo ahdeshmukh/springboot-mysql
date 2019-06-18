@@ -54,7 +54,7 @@ public class UserService {
     public User updateUser(Long id, User user) throws ResourceNotFoundException, DuplicateResourceException {
         // TODO: Only self and admin can update a current user. Check the role and throw error on violation
 
-       User existingUserById, updateUser = null;
+       User existingUserById, updateUser;
         try {
             existingUserById = getUserById(id);
         } catch(ResourceNotFoundException ex) {
@@ -62,7 +62,7 @@ public class UserService {
             throw ex;
         }
 
-        Boolean continueUpdate = false;
+        boolean continueUpdate;
 
         try {
 
@@ -102,7 +102,7 @@ public class UserService {
     }
 
     public User deleteUser(Long id) throws ResourceNotFoundException {
-        User user = null;
+        User user;
         try {
             user = getUserById(id);
             userRepository.deleteById(id);
@@ -132,7 +132,7 @@ public class UserService {
         return this.saveUser(user);
     }
 
-    public User saveUser(User user) {
+    private User saveUser(User user) {
         // check if current user is admin or same as the user being updated
         return userRepository.save(user);
     }
