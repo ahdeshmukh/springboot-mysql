@@ -19,6 +19,7 @@ public class UserService {
     private PasswordService passwordService;
 
     public List<User> getAllUsers() {
+        //return userRepository.findByActiveIs(1); // return only active users
         return userRepository.findAll();
     }
 
@@ -91,7 +92,10 @@ public class UserService {
             String password = ((user.getPassword() == null) || (user.getPassword().isBlank())) ? existingUserById.getPassword() : passwordService.encodePassword(user.getPassword());
             updateUser.setPassword(password);
 
-            return userRepository.save(updateUser);
+            Integer active = (user.getActive() == null) ? existingUserById.getActive() : user.getActive();
+            updateUser.setActive(active);
+
+            return this.saveUser(updateUser);
         }
 
         return null; //should never get here, exceptions should be thrown before this
