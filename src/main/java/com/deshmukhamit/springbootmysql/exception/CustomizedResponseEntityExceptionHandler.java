@@ -2,7 +2,6 @@ package com.deshmukhamit.springbootmysql.exception;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.deshmukhamit.springbootmysql.service.PasswordService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +52,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     @ExceptionHandler(PasswordException.class)
     public final ResponseEntity<CustomErrorResponse> handlePasswordException(PasswordException ex) {
         HttpStatus httpStatus = HttpStatus.PRECONDITION_FAILED;
+        return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
+    }
+
+    @ExceptionHandler(UnauthorizedLoginException.class)
+    public final ResponseEntity<CustomErrorResponse> handleUnauthorizedLogin(UnauthorizedLoginException ex) {
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
         return new ResponseEntity<>(this.getCustomErrorResponse(httpStatus, ex.getLocalizedMessage()), httpStatus);
     }
 

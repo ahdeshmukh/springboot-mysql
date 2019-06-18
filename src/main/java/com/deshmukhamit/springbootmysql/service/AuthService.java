@@ -2,9 +2,9 @@ package com.deshmukhamit.springbootmysql.service;
 
 import com.deshmukhamit.springbootmysql.exception.LoginFailedException;
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
+import com.deshmukhamit.springbootmysql.exception.UnauthorizedLoginException;
 import com.deshmukhamit.springbootmysql.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,8 +15,10 @@ public class AuthService {
     @Autowired
     private PasswordService passwordService;
 
-    public User login(String email, String password) throws LoginFailedException {
-        Boolean success = false;
+    public User login(String email, String password)
+            throws LoginFailedException, UnauthorizedLoginException {
+
+        boolean success = false;
         User user;
 
         if(email.isBlank() || password.isBlank()) {
@@ -40,10 +42,11 @@ public class AuthService {
             throw new LoginFailedException();
         }
 
+        if(user.getActive() == 0) {
+            throw new UnauthorizedLoginException();
+        }
+
         return user;
     }
 
-//    public boolean verifyPassword(String plainPassword, String encryptedPassword) {
-//        return passwordEncoder.matches(plainPassword, encryptedPassword);
-//    }
 }
