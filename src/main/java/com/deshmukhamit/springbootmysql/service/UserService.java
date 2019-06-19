@@ -21,6 +21,8 @@ public class UserService {
     public List<User> getAllUsers() {
         //return userRepository.findByActiveIs(1); // return only active users
         return userRepository.findAll();
+
+        //return userRepository.findAll(Specification.where(UserSpecification.withFirstName("Bill")));
     }
 
     public User getUserById(Long id) {

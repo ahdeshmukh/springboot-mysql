@@ -1,6 +1,6 @@
 package com.deshmukhamit.springbootmysql.model;
 
-import com.deshmukhamit.springbootmysql.annotation.PasswordRequired;
+//import com.deshmukhamit.springbootmysql.annotation.PasswordRequired;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
