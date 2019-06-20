@@ -1,12 +1,14 @@
 package com.deshmukhamit.springbootmysql.controller;
 
-import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.service.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +21,16 @@ public class UserController extends BaseAuthController {
 
     // Get all users
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<User> getAllUsers(@RequestBody(required = false) String stringToParse) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+        try {
+            jsonNode = mapper.readTree(stringToParse);
+        } catch (IOException | NullPointerException ex) {
+            ex.printStackTrace();
+        }
+
+        return userService.getAllUsers(jsonNode);
     }
 
     // Get user by id

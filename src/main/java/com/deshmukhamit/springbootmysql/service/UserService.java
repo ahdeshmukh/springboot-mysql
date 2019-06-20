@@ -5,7 +5,10 @@ import com.deshmukhamit.springbootmysql.exception.PasswordException;
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
+import com.deshmukhamit.springbootmysql.specification.UserSpecification;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +21,25 @@ public class UserService {
     @Autowired
     private PasswordService passwordService;
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(JsonNode jsonNode) {
         //return userRepository.findByActiveIs(1); // return only active users
-        return userRepository.findAll();
+        //return userRepository.findAll();
 
-        //return userRepository.findAll(Specification.where(UserSpecification.withEqual("firstName", "Bill"))
-        //        .and(UserSpecification.withEqual("lastName","Pompano")));
+        String firstName, lastName;
+        try {
+            firstName = jsonNode.get("firstName").asText();
+        } catch (NullPointerException ex) {
+            firstName = null;
+        }
+
+        try {
+            lastName = jsonNode.get("lastName").asText();
+        } catch (NullPointerException ex) {
+            lastName = null;
+        }
+
+        return userRepository.findAll(Specification.where(UserSpecification.withEqual("firstName", firstName))
+                .and(UserSpecification.withEqual("lastName",lastName)));
     }
 
     public User getUserById(Long id) {
