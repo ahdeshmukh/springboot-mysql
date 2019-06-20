@@ -5,7 +5,7 @@ import com.deshmukhamit.springbootmysql.exception.PasswordException;
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
-import com.deshmukhamit.springbootmysql.specification.UserSpecification;
+import com.deshmukhamit.springbootmysql.specification.MySpecification;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,8 +38,8 @@ public class UserService {
             lastName = null;
         }
 
-        return userRepository.findAll(Specification.where(UserSpecification.withEqual("firstName", firstName))
-                .and(UserSpecification.withEqual("lastName",lastName)));
+        return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
+                .and(MySpecification.withEqual("lastName",lastName)));
     }
 
     public User getUserById(Long id) {
