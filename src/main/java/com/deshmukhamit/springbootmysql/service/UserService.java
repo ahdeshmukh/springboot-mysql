@@ -39,7 +39,8 @@ public class UserService {
         }
 
         return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
-                .and(MySpecification.withEqual("lastName",lastName)));
+                .and(MySpecification.withEqual("lastName",lastName))
+                .and(MySpecification.withEqual("active", 1)));
     }
 
     public User getUserById(Long id) {
