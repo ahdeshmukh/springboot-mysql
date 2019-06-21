@@ -8,6 +8,9 @@ import com.deshmukhamit.springbootmysql.repository.UserRepository;
 import com.deshmukhamit.springbootmysql.specification.MySpecification;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +38,19 @@ public class UserService {
         lastName = (String)jsonNodeService.getValue(jsonNode, "lastName");
         active = (Integer) jsonNodeService.getValue(jsonNode, "active");
 
-        return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
+
+        Specification specification = Specification.where(Specification.where(MySpecification.withEqual("firstName", firstName)));
+        //specification.and(MySpecification.withEqual("firstName", firstName));
+        specification.and(MySpecification.withEqual("lastName", lastName));
+        specification.and(MySpecification.withEqual("active", active));
+
+        // work on pagination
+        return userRepository.findAll(specification, Sort.by("updatedAt").descending());
+
+
+        /*return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
                 .and(MySpecification.withEqual("lastName",lastName))
-                .and(MySpecification.withEqual("active", active)));
+                .and(MySpecification.withEqual("active", active)));*/
     }
 
     public User getUserById(Long id) {
