@@ -21,26 +21,23 @@ public class UserService {
     @Autowired
     private PasswordService passwordService;
 
+    @Autowired
+    private JsonNodeService jsonNodeService;
+
     public List<User> getAllUsers(JsonNode jsonNode) {
         //return userRepository.findByActiveIs(1); // return only active users
         //return userRepository.findAll();
 
         String firstName, lastName;
-        try {
-            firstName = jsonNode.get("firstName").asText();
-        } catch (NullPointerException ex) {
-            firstName = null;
-        }
+        Integer active;
 
-        try {
-            lastName = jsonNode.get("lastName").asText();
-        } catch (NullPointerException ex) {
-            lastName = null;
-        }
+        firstName = (String)jsonNodeService.getValue(jsonNode, "firstName");
+        lastName = (String)jsonNodeService.getValue(jsonNode, "lastName");
+        active = (Integer) jsonNodeService.getValue(jsonNode, "active");
 
         return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
                 .and(MySpecification.withEqual("lastName",lastName))
-                .and(MySpecification.withEqual("active", 1)));
+                .and(MySpecification.withEqual("active", active)));
     }
 
     public User getUserById(Long id) {
