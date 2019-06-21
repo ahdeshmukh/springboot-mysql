@@ -8,12 +8,10 @@ import com.deshmukhamit.springbootmysql.repository.UserRepository;
 import com.deshmukhamit.springbootmysql.specification.MySpecification;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,30 +25,35 @@ public class UserService {
     @Autowired
     private JsonNodeService jsonNodeService;
 
+    @Autowired
+    private DateTimeService dateTimeService;
+
     public List<User> getAllUsers(JsonNode jsonNode) {
         //return userRepository.findByActiveIs(1); // return only active users
         //return userRepository.findAll();
 
         String firstName, lastName;
         Integer active;
+        LocalDate createdAt;
 
         firstName = (String)jsonNodeService.getValue(jsonNode, "firstName");
         lastName = (String)jsonNodeService.getValue(jsonNode, "lastName");
         active = (Integer) jsonNodeService.getValue(jsonNode, "active");
+        createdAt = dateTimeService.convertStringToDate((String)jsonNodeService.getValue(jsonNode, "createdAt"));
 
-
-        Specification specification = Specification.where(Specification.where(MySpecification.withEqual("firstName", firstName)));
+        /*Specification specification = Specification.where(MySpecification.withEqual("firstName", firstName));
         //specification.and(MySpecification.withEqual("firstName", firstName));
-        specification.and(MySpecification.withEqual("lastName", lastName));
-        specification.and(MySpecification.withEqual("active", active));
+        specification.and(Specification.where(MySpecification.withEqual("lastName", lastName)));
+        specification.and(Specification.where(MySpecification.withEqual("active", active)));*/
 
         // work on pagination
-        return userRepository.findAll(specification, Sort.by("updatedAt").descending());
+        //return userRepository.findAll(specification, Sort.by("updatedAt").descending());
 
 
-        /*return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
+        return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
                 .and(MySpecification.withEqual("lastName",lastName))
-                .and(MySpecification.withEqual("active", active)));*/
+                .and(MySpecification.withEqual("active", active))
+                .and(MySpecification.withDateEqual("createdAt", createdAt)));
     }
 
     public User getUserById(Long id) {
