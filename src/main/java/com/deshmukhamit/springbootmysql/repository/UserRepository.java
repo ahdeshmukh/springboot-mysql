@@ -3,12 +3,13 @@ package com.deshmukhamit.springbootmysql.repository;
 import com.deshmukhamit.springbootmysql.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor; // used for Specification in userService
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor, QuerydslPredicateExecutor {
     // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
     // https://stackoverflow.com/questions/39167189/spring-boot-dynamic-query
 

@@ -3,15 +3,16 @@ package com.deshmukhamit.springbootmysql.service;
 import com.deshmukhamit.springbootmysql.exception.DuplicateResourceException;
 import com.deshmukhamit.springbootmysql.exception.PasswordException;
 import com.deshmukhamit.springbootmysql.exception.ResourceNotFoundException;
+import com.deshmukhamit.springbootmysql.model.QUser;
 import com.deshmukhamit.springbootmysql.model.User;
 import com.deshmukhamit.springbootmysql.repository.UserRepository;
-import com.deshmukhamit.springbootmysql.specification.MySpecification;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Service
@@ -28,11 +29,36 @@ public class UserService {
     @Autowired
     private DateTimeService dateTimeService;
 
-    public List<User> getAllUsers(JsonNode jsonNode) {
-        //return userRepository.findByActiveIs(1); // return only active users
-        //return userRepository.findAll();
+    @PersistenceContext
+    private EntityManager entityManager;
 
-        String firstName, lastName;
+    public List<User> getAllUsers(JsonNode jsonNode) {
+
+        String firstName = (String) jsonNodeService.getValue(jsonNode, "firstName");
+        String lastName = (String) jsonNodeService.getValue(jsonNode, "lastName");
+        Integer active = (Integer) jsonNodeService.getValue(jsonNode, "active");
+
+        var qUser = QUser.user;
+        var query = new JPAQuery(entityManager);
+        query.from(qUser);
+
+        if(active != null) {
+            query.where(qUser.active.eq(active));
+        }
+        if(firstName != null) {
+            query.where(qUser.firstName.equalsIgnoreCase(firstName));
+        }
+        if(lastName != null) {
+            query.where(qUser.lastName.equalsIgnoreCase(lastName));
+        }
+
+        return query.fetch();
+        //return userRepository.findAll();
+        //
+        // return userRepository.findByActiveIs(1); // return only active users
+        //
+
+        /*String firstName, lastName;
         Integer active;
         LocalDate createdAt;
 
@@ -50,10 +76,10 @@ public class UserService {
         //return userRepository.findAll(specification, Sort.by("updatedAt").descending());
 
 
-        return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
+        /*return userRepository.findAll(Specification.where(MySpecification.withEqual("firstName", firstName))
                 .and(MySpecification.withEqual("lastName",lastName))
                 .and(MySpecification.withEqual("active", active))
-                .and(MySpecification.withDateEqual("createdAt", createdAt)));
+                .and(MySpecification.withDateEqual("createdAt", createdAt)));*/
     }
 
     public User getUserById(Long id) {
