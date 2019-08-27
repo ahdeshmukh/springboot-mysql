@@ -14,7 +14,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "user")
-@EntityListeners(AuditingEntityListener.class) // not sure if this is needed or what it does
+@EntityListeners(AuditingEntityListener.class) // why AudtingEntityListener is needed (https://www.callicoder.com/hibernate-spring-boot-jpa-one-to-many-mapping-example/)
 //@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}) -> using @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) instead
 
 public class User implements Serializable {
